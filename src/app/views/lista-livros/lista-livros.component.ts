@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { debounceTime, filter, map, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs';
 import { Item } from 'src/app/models/interfaces';
 import { LivroVolumeInfo } from 'src/app/models/livroVolumeInfo';
 import { LivroService } from 'src/app/service/livro.service';
@@ -24,7 +24,9 @@ export class ListaLivrosComponent {
     .pipe(
       debounceTime(PAUSA),
       filter(valorDigitado => valorDigitado.length >= 3),
+      distinctUntilChanged(),
       switchMap((valorDigitado) => this.service.buscar(valorDigitado)),
+      tap(retorno => console.log(retorno)),
       map(items => this.livrosResultadoParaLivros(items))
     );
 
