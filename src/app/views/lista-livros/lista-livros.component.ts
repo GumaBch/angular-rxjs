@@ -8,11 +8,11 @@ import {
   catchError,
   debounceTime,
   distinctUntilChanged,
+  EMPTY,
   filter,
   map,
   switchMap,
-  tap,
-  throwError
+  tap
 } from 'rxjs';
 
 const PAUSA = 300;
@@ -25,6 +25,7 @@ const PAUSA = 300;
 export class ListaLivrosComponent {
 
   campoBusca = new FormControl();
+  mensagemErro = '';
 
   constructor(
     private service: LivroService
@@ -38,9 +39,11 @@ export class ListaLivrosComponent {
       switchMap((valorDigitado) => this.service.buscar(valorDigitado)),
       tap(retorno => console.log(retorno)),
       map(items => this.livrosResultadoParaLivros(items)),
-      catchError(erro => {
-        console.log(erro);
-        return throwError(() => new Error('Ops, ocorreu um erro'));
+      catchError(() => {
+        this.mensagemErro = 'Ops, ocorreu um erro!';
+        return EMPTY;
+        // console.log(erro);
+        // return throwError(() => new Error(this.mensagemErro = 'Ops, ocorreu um erro!'));
       })
     );
 
